@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard Chatbot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    #chatbox { max-width: 400px; }
+    input, button { padding: 10px; width: 100%; margin-top: 5px; }
+    #response { margin-top: 10px; background: #f1f3f4; padding: 10px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+
+<div id="chatbox">
+  <h3>📊 Dashboard Assistant</h3>
+  <input type="text" id="question" placeholder="Ask something...">
+  <button onclick="ask()">Ask</button>
+  <div id="response">Answer will appear here...</div>
+</div>
+
+<script>
+const SHEET_ID = "PASTE_YOUR_SHEET_ID";
+const API_KEY = "PASTE_YOUR_API_KEY";
+
+async function ask() {
+  let userInput = document.getElementById("question").value.toLowerCase();
+  
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${15nVPABd1lsP507CQeBDyJRrm2qDeiBPE1PeVu_x255s}/values/Sheet1?key=${AIzaSyDKyXXtT_zjJmzt83Gyok9L6CMCHTkwU1A}`;
+  
+  const res = await fetch(url);
+  const data = await res.json();
+  const rows = data.values;
+
+  let found = "❌ Answer not found.";
+
+  for (let i = 1; i < rows.length; i++) {
+    if (userInput.includes(rows[i][0].toLowerCase())) {
+      found = rows[i][1];
+      break;
+    }
+  }
+
+  document.getElementById("response").innerText = found;
+}
+</script>
+
+</body>
+</html>
