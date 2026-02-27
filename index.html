@@ -1,44 +1,53 @@
 <script>
 const SHEET_ID = "15nVPABd1lsP507CQeBDyJRrm2qDeiBPE1PeVu_x255s";
-const API_KEY = "AIzaSyDKyXXtT_zjJmzt83Gyok9L6CMCHTkwU1A";
+const API_KEY = "YOUR_NEW_API_KEY_HERE"; // Replace with your new key
 
 async function ask() {
-  let userInput = document.getElementById("question").value.toLowerCase();
+  const questionInput = document.getElementById("question");
   const responseBox = document.getElementById("response");
+
+  if (!questionInput || !responseBox) {
+    console.error("Element not found");
+    return;
+  }
+
+  const userInput = questionInput.value.trim().toLowerCase();
+
+  if (!userInput) {
+    responseBox.innerText = "⚠️ Please enter a question.";
+    return;
+  }
 
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`;
 
   try {
     const res = await fetch(url);
     const data = await res.json();
-    console.log("API Response:", data);
+
+    console.log("API Data:", data);
 
     if (!data.values) {
-      responseBox.innerText = "⚠️ API returned no data.";
+      responseBox.innerText = "⚠️ No data found in sheet.";
       return;
     }
 
     const rows = data.values;
     let found = "❌ Answer not found.";
 
-   for (let i = 1; i < rows.length; i++) {
-  const question = rows[i][0].toLowerCase();
+    for (let i = 1; i < rows.length; i++) {
+      const question = rows[i][0]?.toLowerCase() || "";
 
-  // Check both directions for flexible matching
-  if (
-    userInput.includes(question) ||
-    question.includes(userInput)
-  ) {
-    found = rows[i][1];
-    break;
-  }
-}
+      if (userInput.includes(question) || question.includes(userInput)) {
+        found = rows[i][1] || "No answer available.";
+        break;
+      }
+    }
 
     responseBox.innerText = found;
 
   } catch (error) {
-    console.error(error);
-    responseBox.innerText = "⚠️ Error occurred. Check console.";
+    console.error("Error:", error);
+    responseBox.innerText = "⚠️ Error fetching data. Check console.";
   }
 }
 </script>
