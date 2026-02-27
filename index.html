@@ -1,53 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard Chatbot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    #chatbox { max-width: 400px; }
+    input, button { padding: 10px; width: 100%; margin-top: 5px; }
+    #response { margin-top: 10px; background: #f1f3f4; padding: 10px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+
+<div id="chatbox">
+  <h3>📊 Dashboard Assistant</h3>
+  <input type="text" id="question" placeholder="Ask something...">
+  <button onclick="ask()">Ask</button>
+  <div id="response">Answer will appear here...</div>
+</div>
+
 <script>
 const SHEET_ID = "15nVPABd1lsP507CQeBDyJRrm2qDeiBPE1PeVu_x255s";
-const API_KEY = "AIzaSyA9hwrryLxGH9OMSCcnGUNaaxAIfn9t_yE"; 
+const API_KEY = "AIzaSyA9hwrryLxGH9OMSCcnGUNaaxAIfn9t_yE";
 
 async function ask() {
-  const questionInput = document.getElementById("question");
-  const responseBox = document.getElementById("response");
-
-  if (!questionInput || !responseBox) {
-    console.error("Element not found");
-    return;
-  }
-
-  const userInput = questionInput.value.trim().toLowerCase();
-
-  if (!userInput) {
-    responseBox.innerText = "⚠️ Please enter a question.";
-    return;
-  }
-
+  let userInput = document.getElementById("question").value.toLowerCase();
+  
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`;
+  
+  const res = await fetch(url);
+  const data = await res.json();
+  const rows = data.values;
 
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
+  let found = "❌ Answer not found.";
 
-    console.log("API Data:", data);
-
-    if (!data.values) {
-      responseBox.innerText = "⚠️ No data found in sheet.";
-      return;
+  for (let i = 1; i < rows.length; i++) {
+    if (userInput.includes(rows[i][0].toLowerCase())) {
+      found = rows[i][1];
+      break;
     }
-
-    const rows = data.values;
-    let found = "❌ Answer not found.";
-
-    for (let i = 1; i < rows.length; i++) {
-      const question = rows[i][0]?.toLowerCase() || "";
-
-      if (userInput.includes(question) || question.includes(userInput)) {
-        found = rows[i][1] || "No answer available.";
-        break;
-      }
-    }
-
-    responseBox.innerText = found;
-
-  } catch (error) {
-    console.error("Error:", error);
-    responseBox.innerText = "⚠️ Error fetching data. Check console.";
   }
+
+  document.getElementById("response").innerText = found;
 }
 </script>
+
+</body>
+</html>
