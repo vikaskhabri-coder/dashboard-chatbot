@@ -4,19 +4,131 @@
   <title>CAS Dashboard Chatbot</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: Arial; padding: 20px; }
-    #chatbox { max-width: 400px; }
-    input, button { padding: 10px; width: 100%; margin-top: 5px; }
-    #response { margin-top: 10px; background: #f1f3f4; padding: 10px; border-radius: 6px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+    }
+
+    #chatbox {
+      width: 380px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+      background: white;
+    }
+
+    /* ── Header ── */
+    #chat-header {
+      background: linear-gradient(135deg, #4a90e2, #7b2ff7);
+      padding: 20px;
+      text-align: center;
+      color: white;
+    }
+
+    #chat-header .avatar {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    #chat-header h3 {
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    #chat-header p {
+      font-size: 12px;
+      opacity: 0.85;
+      margin-top: 4px;
+    }
+
+    /* ── Response Box ── */
+    #response {
+      min-height: 140px;
+      padding: 20px;
+      background: #f4f6fb;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.6;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    /* ── Input Area ── */
+    #input-area {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      background: white;
+      gap: 10px;
+    }
+
+    #question {
+      flex: 1;
+      padding: 10px 16px;
+      border: 1.5px solid #ddd;
+      border-radius: 25px;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+      width: auto;
+      margin: 0;
+    }
+
+    #question:focus {
+      border-color: #4a90e2;
+    }
+
+    #ask-btn {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #4a90e2, #7b2ff7);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      width: auto;
+      margin: 0;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    #ask-btn:hover {
+      opacity: 0.9;
+      transform: scale(1.04);
+    }
+
+    #ask-btn:active {
+      transform: scale(0.97);
+    }
   </style>
 </head>
 <body>
 
 <div id="chatbox">
-  <h3>🤖 CAS Assistant</h3>
-  <input type="text" id="question" placeholder="Ask something...">
-  <button onclick="ask()">Ask</button>
-  <div id="response">Answer will appear here...</div>
+
+  <!-- Header -->
+  <div id="chat-header">
+    <span class="avatar">🤖</span>
+    <h3>CAS Assistant</h3>
+    <p>Ask me anything about the dashboard</p>
+  </div>
+
+  <!-- Answer -->
+  <div id="response">💬 Answer will appear here...</div>
+
+  <!-- Input -->
+  <div id="input-area">
+    <input type="text" id="question" placeholder="Ask something..." onkeydown="if(event.key==='Enter') ask()">
+    <button id="ask-btn" onclick="ask()">Ask</button>
+  </div>
+
 </div>
 
 <script>
@@ -32,17 +144,15 @@ async function ask() {
     return;
   }
 
+  responseBox.innerText = "⏳ Fetching answer...";
+
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`;
 
   try {
     const res = await fetch(url);
-
-    if (!res.ok) {
-      throw new Error("API request failed");
-    }
+    if (!res.ok) throw new Error("API request failed");
 
     const data = await res.json();
-
     if (!data.values) {
       responseBox.innerText = "⚠️ No data found in sheet.";
       return;
