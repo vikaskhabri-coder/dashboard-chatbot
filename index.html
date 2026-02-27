@@ -20,17 +20,18 @@
       --input-bg: #0f172a;
       --shadow: 0 25px 60px rgba(0,0,0,0.5);
     }
-    .light {
+    body.light {
       --bg: #f0f4ff;
       --surface: #ffffff;
-      --card: #ffffff;
-      --border: rgba(0,0,0,0.08);
+      --card: #f8faff;
+      --border: rgba(0,0,0,0.1);
       --text: #1e293b;
       --text-muted: #64748b;
-      --bot-bubble: #e8edf8;
+      --bot-bubble: #e2e8f8;
       --input-bg: #f1f5f9;
-      --shadow: 0 25px 60px rgba(100,100,200,0.15);
+      --shadow: 0 25px 60px rgba(100,100,200,0.18);
     }
+    body, body * { transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -38,8 +39,6 @@
       font-family: 'DM Sans', sans-serif;
       min-height: 100vh;
       background: var(--bg);
-      transition: background 0.4s;
-      /* Demo page content */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -59,7 +58,7 @@
     /* Demo page text */
     .demo-page {
       text-align: center;
-      color: var(--text, #e2e8f0);
+      color: var(--text);
       z-index: 1;
       padding: 20px;
     }
@@ -71,7 +70,7 @@
       -webkit-text-fill-color: transparent;
       margin-bottom: 12px;
     }
-    .demo-page p { color: var(--text-muted, #94a3b8); font-size: 15px; }
+    .demo-page p { color: var(--text-muted); font-size: 15px; }
 
     /* ══════════════════════════════
        FLOATING WIDGET BUTTON
